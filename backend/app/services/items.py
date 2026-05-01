@@ -1,7 +1,7 @@
 ### app/services/items.py
 
 from app.schemas.items import Item, ItemCreate, ItemUpdate, SearchResponse
-from app.repositories.items import ItemsRepository, items_repository
+from app.repositories.items import ItemsRepository
 from app.services.exceptions import ItemNotFoundError
 
 
@@ -35,5 +35,3 @@ class ItemsService:
     def search(self, q: str, limit: int = 10) -> SearchResponse:
         return SearchResponse(query=q, limit=limit, results=[])
         
-
-items_service = ItemsService(items_repository)

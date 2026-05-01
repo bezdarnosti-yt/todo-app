@@ -4,14 +4,14 @@ import pytest
 
 from app.main import app
 from fastapi.testclient import TestClient
-from app.repositories.items import items_repository
+from app.repositories.items import ItemsRepository
+from app.dependencies import get_items_repository
 
 
 @pytest.fixture
-def client(reset_repository):
-    return TestClient(app)
-
-@pytest.fixture(autouse=True)
-def reset_repository():
-    items_repository._items.clear()
-    items_repository._next_id = 1
+def client():
+    items_repository = ItemsRepository()
+    app.dependency_overrides[get_items_repository] = lambda: items_repository
+    yield TestClient(app)
+    app.dependency_overrides.clear()
+    
