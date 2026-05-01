@@ -1,11 +1,11 @@
 ### app/routers/health.py
 
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 
 router = APIRouter(tags=["health"])
 
 
-@router.get("/")
+@router.get("/", status_code=status.HTTP_200_OK)
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
