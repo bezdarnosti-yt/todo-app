@@ -32,7 +32,6 @@ class ItemsService:
         success: bool = await self._repository.delete(item_id=item_id)
         if not success:
             raise ItemNotFoundError()
-        
+
     async def search(self, q: str, limit: int = 10) -> SearchResponse:
         return SearchResponse(query=q, limit=limit, results=[])
-        

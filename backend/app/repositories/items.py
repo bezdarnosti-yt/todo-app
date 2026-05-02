@@ -15,7 +15,9 @@ class ItemsRepository:
         return list(result.scalars().all())
 
     async def get_by_id(self, item_id: int) -> ItemModel | None:
-        result = await self._session.execute(select(ItemModel).where(ItemModel.id == item_id))
+        result = await self._session.execute(
+            select(ItemModel).where(ItemModel.id == item_id)
+        )
         return result.scalar_one_or_none()
 
     async def create(self, data: ItemCreate) -> ItemModel:

@@ -8,9 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_items_repository(
-        session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ) -> ItemsRepository:
     return ItemsRepository(session)
 
-def get_items_service(repository: ItemsRepository = Depends(get_items_repository)) -> ItemsService:
+
+def get_items_service(
+    repository: ItemsRepository = Depends(get_items_repository),
+) -> ItemsService:
     return ItemsService(repository=repository)

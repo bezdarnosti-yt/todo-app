@@ -14,4 +14,3 @@ def client():
     app.dependency_overrides[get_items_repository] = lambda: items_repository
     yield TestClient(app)
     app.dependency_overrides.clear()
-    

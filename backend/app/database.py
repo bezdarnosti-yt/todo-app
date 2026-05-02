@@ -6,15 +6,10 @@ from collections.abc import AsyncGenerator
 from app.config import settings
 
 
-engine = create_async_engine(
-    settings.database_url,
-    echo=settings.debug
-)
+engine = create_async_engine(settings.database_url, echo=settings.debug)
 
 async_session_maker = async_sessionmaker(
-    engine,
-    expire_on_commit=False,
-    autoflush=False
+    engine, expire_on_commit=False, autoflush=False
 )
 
 
