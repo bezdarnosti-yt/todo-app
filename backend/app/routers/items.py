@@ -35,7 +35,7 @@ async def create_item(
     return ItemSchema.model_validate(result)
 
 
-@router.get("/{item_id}", response_model=ItemSchema)
+@router.get("/{item_id}")
 async def get_by_id(
     item_id: int, service: ItemsService = Depends(get_items_service)
 ) -> ItemSchema:
@@ -56,7 +56,7 @@ async def delete_item(
         raise HTTPException(404, "Item not found")
 
 
-@router.patch("/{item_id}", status_code=status.HTTP_200_OK, response_model=ItemSchema)
+@router.patch("/{item_id}", status_code=status.HTTP_200_OK)
 async def update_item(
     item_id: int, update: ItemUpdate, service: ItemsService = Depends(get_items_service)
 ) -> ItemSchema:
