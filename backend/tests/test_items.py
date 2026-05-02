@@ -11,10 +11,10 @@ def test_create_item(client):
         json={"name": "test"}
     )
     assert response.status_code == 201
-    assert response.json() == {"item_id": 1, "name": "test"}
+    assert response.json() == {"id": 1, "name": "test"}
 
     list_response = client.get("/items")
-    assert list_response.json() == [{"item_id": 1, "name": "test"}]
+    assert list_response.json() == [{"id": 1, "name": "test"}]
 
 def test_list_items_empty(client):
     response = client.get("/items")
@@ -33,8 +33,8 @@ def test_list_items_after_create(client):
     response = client.get("/items")
     assert response.status_code == 200
     assert response.json() == [
-        {"item_id": 1, "name": "123"},
-        {"item_id": 2, "name": "456"}
+        {"id": 1, "name": "123"},
+        {"id": 2, "name": "456"}
     ]
 
 def test_get_item_by_id(client):
@@ -44,7 +44,7 @@ def test_get_item_by_id(client):
     )
     response = client.get("/items/1")
     assert response.status_code == 200
-    assert response.json() == {"item_id": 1, "name": "123"}
+    assert response.json() == {"id": 1, "name": "123"}
 
 def test_get_item_not_found(client):
     response = client.get("/items/999")
@@ -61,7 +61,7 @@ def test_update_item(client):
         json={"name": "new"}
     )
     assert response.status_code == 200
-    assert response.json() == {"item_id": 1, "name": "new"}
+    assert response.json() == {"id": 1, "name": "new"}
 
 def test_update_item_partial(client):
     client.post(
@@ -73,7 +73,7 @@ def test_update_item_partial(client):
         json={}
     )
     assert response.status_code == 200
-    assert response.json() == {"item_id": 1, "name": "123"}
+    assert response.json() == {"id": 1, "name": "123"}
 
 def test_update_item_not_found(client):
     response = client.patch(

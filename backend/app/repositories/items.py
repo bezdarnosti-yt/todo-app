@@ -1,43 +1,47 @@
 ### app/repositories/items.py
 
-from app.schemas.items import Item, ItemCreate, ItemUpdate
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from app.models.items import Item as ItemModel
+from app.schemas.items import ItemUpdate, ItemCreate
 
 
 class ItemsRepository:
-    def __init__(self):
-        self._items: list[Item] = []
-        self._next_id: int = 1
+    def __init__(self, session: AsyncSession):
+        self._session = session
 
-    def get_all(self) -> list[Item]:
-        return self._items
+    async def get_all(self) -> list[ItemModel]:
+        result = await self._session.execute(select(ItemModel))
+        return list(result.scalars().all())
 
-    def get_by_id(self, item_id: int) -> Item | None:
-        for item in self._items:
-            if item.item_id == item_id:
-                return item
-        return None
+    async def get_by_id(self, item_id: int) -> ItemModel | None:
+        result = await self._session.execute(select(ItemModel).where(ItemModel.id == item_id))
+        return result.scalar_one_or_none()
 
-    def create(self, data: ItemCreate) -> Item:
-        instance = Item(item_id=self._next_id, name=data.name)
-        self._next_id += 1
-        self._items.append(instance)
+    async def create(self, data: ItemCreate) -> ItemModel:
+        instance = ItemModel(name=data.name)
+        self._session.add(instance)
+        await self._session.commit()
+        await self._session.refresh(instance)
         return instance
 
-    def update(self, item_id: int, data: ItemUpdate) -> Item | None:
+    async def update(self, item_id: int, data: ItemUpdate) -> ItemModel | None:
+        item = await self.get_by_id(item_id=item_id)
+        if item is None:
+            return None
         update_dict = data.model_dump(exclude_unset=True)
-        for item in self._items:
-            if item.item_id == item_id:
-                for key, value in update_dict.items():
-                    setattr(item, key, value)
-                return item
-        return None
+        if not update_dict:
+            return item
+        for key, value in update_dict.items():
+            setattr(item, key, value)
+        await self._session.commit()
+        await self._session.refresh(item)
+        return item
 
-    def delete(self, item_id: int) -> bool:
-        for index, item in enumerate(self._items):
-            if item.item_id == item_id:
-                self._items.pop(index)
-                return True
-        return False
-
-    
-items_repository = ItemsRepository()
+    async def delete(self, item_id: int) -> bool:
+        item = await self.get_by_id(item_id=item_id)
+        if item is None:
+            return False
+        await self._session.delete(item)
+        await self._session.commit()
+        return True
